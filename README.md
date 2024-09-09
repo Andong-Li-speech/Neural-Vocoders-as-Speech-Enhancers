@@ -10,7 +10,7 @@ Speech enhancement (SE) and neural vocoding are traditionally viewed as separate
 ## requirements:
 ```bash
 git clone https://github.com/Andong-Li-speech/Neural-Vocoders-as-Speech-Enhancers.git
-cd Neural_Vocoders_as_Speech_Enhancers
+cd Neural-Vocoders-as-Speech-Enhancers
 pip install -r requirements.txt
 ```
 
