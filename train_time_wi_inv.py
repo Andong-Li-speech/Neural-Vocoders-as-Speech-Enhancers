@@ -13,14 +13,16 @@ import torch
 import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
-from ptflops import get_model_complexity_info
+# from ptflops import get_model_complexity_info
 from dataset import Dataset, mel_spectrogram, get_dataset_filelist
 from Models.models import (
     MultiPeriodDiscriminator,
     MultiScaleDiscriminator,
     feature_loss,
-    generator_loss,
-    discriminator_loss,
+    hinge_generator_loss,
+    hinge_discriminator_loss,
+    ls_generator_loss,
+    ls_discriminator_loss
 )
 
 from Models import (HiFiGAN,
@@ -185,14 +187,27 @@ def train(h):
             optim_d.zero_grad()
 
             y_df_hat_r, y_df_hat_g, _, _ = mpd(y, y_g.detach())
-            loss_disc_f, losses_disc_f_r, losses_disc_f_g = discriminator_loss(
-                y_df_hat_r, y_df_hat_g
-            )
+            if h.model_name in ['HiFiGAN', 'iSTFTNet']:
+                # for HiFiGAN, and iSTFTNet, we follow the original loss-setting (ls)
+                loss_disc_f, losses_disc_f_r, losses_disc_f_g = ls_discriminator_loss(
+                    y_df_hat_r, y_df_hat_g
+                )
+            else:
+                loss_disc_f, losses_disc_f_r, losses_disc_f_g = hinge_discriminator_loss(
+                    y_df_hat_r, y_df_hat_g
+                )
 
             y_ds_hat_r, y_ds_hat_g, _, _ = mrd(y, y_g.detach())
-            loss_disc_s, losses_disc_s_r, losses_disc_s_g = discriminator_loss(
-                y_ds_hat_r, y_ds_hat_g
-            )
+            if h.model_name in ['HiFiGAN', 'iSTFTNet']:
+                # for HiFiGAN, and iSTFTNet, we follow the original loss-setting (ls)
+                loss_disc_s, losses_disc_s_r, losses_disc_s_g = ls_discriminator_loss(
+                    y_ds_hat_r, y_ds_hat_g
+                )
+            else:
+                loss_disc_s, losses_disc_s_r, losses_disc_s_g = hinge_discriminator_loss(
+                    y_ds_hat_r, y_ds_hat_g
+                )
+
             L_D = loss_disc_s + loss_disc_f
             L_D.backward()
             optim_d.step()
@@ -205,8 +220,12 @@ def train(h):
 
             loss_fm_f = feature_loss(fmap_f_r, fmap_f_g)
             loss_fm_s = feature_loss(fmap_s_r, fmap_s_g)
-            loss_gen_f, losses_gen_f = generator_loss(y_df_g)
-            loss_gen_s, losses_gen_s = generator_loss(y_ds_g)
+            if h.model_name in ['HiFiGAN', 'iSTFTNet']:
+                loss_gen_f, losses_gen_f = ls_generator_loss(y_df_g)
+                loss_gen_s, losses_gen_s = ls_generator_loss(y_ds_g)
+            else:
+                loss_gen_f, losses_gen_f = hinge_generator_loss(y_df_g)
+                loss_gen_s, losses_gen_s = hinge_generator_loss(y_ds_g)
             L_GAN_G = loss_gen_s + loss_gen_f
             L_FM = loss_fm_s + loss_fm_f
             L_Mel = F.l1_loss(meloss, y_g_mel) * 45
