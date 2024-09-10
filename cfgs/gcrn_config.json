@@ -6,7 +6,7 @@
     "test_input_wavs_dir":"/data4/liandong/PROJECTS/Neural_Vocoders_as_Speech_Enhancers/DatasetsScp/LSJ/ljs_audio_text_test_filelist.txt",
     "test_input_mels_dir": "./",
     "test_mel_load": 0,
-    "test_output_dir": "/data4/liandong/PROJECTS/FreeV/File_Decodes/LJSpeech/GCRN",
+    "test_output_dir": "/data4/liandong/PROJECTS/Neural_Vocoders_as_Speech_Enhancers/File_Decodes/LJSpeech/GCRN",
 
     "batch_size": 16,
     "learning_rate": 0.0002,
