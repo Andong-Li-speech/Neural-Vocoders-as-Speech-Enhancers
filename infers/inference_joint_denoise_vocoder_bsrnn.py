@@ -123,7 +123,8 @@ def main():
     parse.add_argument("--processing_mode", type=str, required=True, default="denoise", choices=["denoise", "vocoder"],
                        help="Processing mode.")
     args = parse.parse_args()
-    dir_path = os.getcwd()
+    # obtain the par_dir
+    dir_path = os.path.dirname(os.getcwd())
     config_file = os.path.join(dir_path, args.cfg_filename)
 
     with open(config_file) as f:
