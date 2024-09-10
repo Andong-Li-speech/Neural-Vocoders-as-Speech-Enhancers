@@ -25,7 +25,7 @@ bsrnn_config.json
 freeV_config.json
 gcrn_config.json
 """
-python train_tf_wi_inv.py 
+python train_tf_wi_inv.py --cfg_filename ./cfgs/bsrnn_config.json
 ```
 for time domain based models:
 ```
