@@ -14,6 +14,7 @@
     "adam_b2": 0.99,
     "lr_decay": 0.999,
     "seed": 1234,
+    "training_steps": 1000000,
     "training_epochs": 3100,
     "stdout_interval": 500,
     "checkpoint_interval": 5000,
