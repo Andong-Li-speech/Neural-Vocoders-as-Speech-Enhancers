@@ -613,7 +613,7 @@ def feature_loss(fmap_r, fmap_g):
     return loss
 
 
-def discriminator_loss(disc_real_outputs, disc_generated_outputs):
+def hinge_discriminator_loss(disc_real_outputs, disc_generated_outputs):
     loss = 0
     r_losses = []
     g_losses = []
@@ -626,12 +626,35 @@ def discriminator_loss(disc_real_outputs, disc_generated_outputs):
 
     return loss, r_losses, g_losses
 
+def ls_discriminator_loss(disc_real_outputs, disc_generated_outputs):
+    loss = 0
+    r_losses = []
+    g_losses = []
+    for dr, dg in zip(disc_real_outputs, disc_generated_outputs):
+        r_loss = torch.mean((1 - dr)**2)
+        g_loss = torch.mean(dg ** 2)
+        loss += (r_loss + g_loss)
+        r_losses.append(r_loss.item())
+        g_losses.append(g_loss.item())
 
-def generator_loss(disc_outputs):
+    return loss, r_losses, g_losses
+
+
+def hinge_generator_loss(disc_outputs):
     loss = 0
     gen_losses = []
     for dg in disc_outputs:
         l = torch.mean(torch.clamp(1 - dg, min=0))
+        gen_losses.append(l)
+        loss += l
+
+    return loss, gen_losses
+
+def ls_generator_loss(disc_outputs):
+    loss = 0
+    gen_losses = []
+    for dg in disc_outputs:
+        l = torch.mean((1-dg)**2)
         gen_losses.append(l)
         loss += l
 
