@@ -36,7 +36,7 @@ istftnet_config.json
 hddemucas_config.json
 convtasnet_config.json
 """
-python train_time_wi_inv.py --cfg_filename ./cfgs/bsrnn_joint_denoise_vocoder_config.json
+python train_time_wi_inv.py --cfg_filename ./cfgs/convtasnet_config.json
 ```
 
 ## Vocoder inference:
